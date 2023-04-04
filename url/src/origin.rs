@@ -12,7 +12,7 @@ use crate::Url;
 use alloc::borrow::ToOwned;
 use alloc::string::String;
 use core::sync::atomic::{AtomicUsize, Ordering};
-use idna::domain_to_unicode;
+
 
 pub fn url_origin(url: &Url) -> Origin {
     let scheme = url.scheme();
