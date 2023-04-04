@@ -127,6 +127,8 @@ url = { version = "2", features = ["serde"] }
     feature(debugger_visualizer),
     debugger_visualizer(natvis_file = "../../debug_metadata/url.natvis")
 )]
+#![cfg_attr(feature = "core-error", feature(error_in_core))]
+
 #![no_std]
 #[macro_use]
 extern crate alloc;
