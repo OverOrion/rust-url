@@ -42,6 +42,7 @@ std = ["idna/std"]
 debugger_visualizer = []
 # Expose internal offsets of the URL.
 expose_internals = []
+alloc = ["idna/alloc", "serde/alloc"]
 
 
 [[bench]]
