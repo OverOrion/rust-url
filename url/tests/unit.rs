@@ -8,15 +8,19 @@
 
 //! Unit tests
 
-use std::borrow::Cow;
-use std::cell::{Cell, RefCell};
+use alloc::borrow::Cow;
+use core::cell::{Cell, RefCell};
+#[cfg(feature = "std")]
 use std::net::{Ipv4Addr, Ipv6Addr};
+#[cfg(feature = "core-net")]
+use core::net::{Ipv4Addr, Ipv6Addr};
+
 use std::path::{Path, PathBuf};
 use url::{form_urlencoded, Host, Origin, Url};
 
 #[test]
 fn size() {
-    use std::mem::size_of;
+    use core::mem::size_of;
     assert_eq!(size_of::<Url>(), size_of::<Option<Url>>());
 }
 

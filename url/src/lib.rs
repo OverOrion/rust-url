@@ -128,10 +128,14 @@ url = { version = "2", features = ["serde"] }
     debugger_visualizer(natvis_file = "../../debug_metadata/url.natvis")
 )]
 #![cfg_attr(feature = "core-error", feature(error_in_core))]
+#![cfg_attr(feature = "core-net", feature(ip_in_core))]
 
-#![no_std]
+//#![no_std]
+#![cfg_attr(not(test), no_std)]
 #[macro_use]
+#[cfg(feature = "alloc")]
 extern crate alloc;
+#[cfg(feature = "std")]
 extern crate std;
 
 pub use form_urlencoded;
@@ -152,11 +156,12 @@ use core::mem;
 use core::ops::{Range, RangeFrom, RangeTo};
 use core::str;
 use percent_encoding::utf8_percent_encode;
-use std::net::IpAddr;
+#[cfg(feature = "core-net")]
+use core::net::IpAddr;
 #[cfg(feature = "std")]
 use std::{
     io,
-    net::{SocketAddr, ToSocketAddrs},
+    net::{IpAddr, SocketAddr, ToSocketAddrs},
     path::{Path, PathBuf},
 };
 

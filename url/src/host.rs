@@ -11,7 +11,82 @@ use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use core::cmp;
 use core::fmt::{self, Formatter};
+use core::marker::PhantomData;
+#[cfg(feature = "std")]
 use std::net::{Ipv4Addr, Ipv6Addr};
+
+#[cfg(feature = "core-net")]
+use core::net::{Ipv4Addr, Ipv6Addr};
+
+
+#[cfg(feature = "core-net")]
+struct FromStrVisitor<T> {
+    expecting: &'static str,
+    ty: PhantomData<T>,
+}
+
+#[cfg(feature = "core-net")]
+impl<T> FromStrVisitor<T> {
+    fn new(expecting: &'static str) -> Self {
+        FromStrVisitor {
+            expecting: expecting,
+            ty: PhantomData,
+        }
+    }
+}
+
+use serde::de::Error;
+use serde::de::Visitor;
+use serde::Deserializer;
+use core::str;
+#[cfg(feature = "core-net")]
+impl<'de, T> Visitor<'de> for FromStrVisitor<T>
+where
+    T: str::FromStr,
+    T::Err: fmt::Display,
+{
+    type Value = T;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str(self.expecting)
+    }
+
+    fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
+    where
+        E: Error,
+    {
+        s.parse().map_err(Error::custom)
+    }
+}
+
+#[cfg(feature = "core-net")]
+impl<'de> Deserialize<'de> for Ipv4Addr {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_str(FromStrVisitor::new("IPv4 address"))
+        } else {
+            <[u8; 4]>::deserialize(deserializer).map(<Ipv4Addr>::from)
+        }
+    }
+}
+
+#[cfg(feature = "core-net")]
+impl<'de> Deserialize<'de> for Ipv6Addr {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_str(FromStrVisitor::new("IPv6 address"))
+        } else {
+            <[u8; 16]>::deserialize(deserializer).map(<Ipv6Addr>::from)
+        }
+    }
+}
+
 
 use percent_encoding::{percent_decode, utf8_percent_encode, CONTROLS};
 #[cfg(feature = "serde")]

@@ -29,10 +29,12 @@ debugger_test_parser = "0.1"
 
 [dependencies]
 
-form_urlencoded = { version = "1.1.0", path = "../form_urlencoded" }
+form_urlencoded = { version = "1.1.0", path = "../form_urlencoded", default-features = false } # seems to work fine
 idna = { version = "0.3.0", default-features = false, path = "../idna", optional = true }
-percent-encoding = { version = "2.2.0", path = "../percent_encoding" }
-serde = {version = "1.0", default-features = false, optional = true, features = ["derive"]}
+percent-encoding = { version = "2.2.0", path = "../percent_encoding", default-features = false, features = ["alloc"]}
+# serde = {version = "1.0", default-features = false, optional = true, features = ["derive"]}
+
+serde = {default-features = false, optional = true, features = ["derive", "unstable"], path = "../../serde/serde"}
 
 [features]
 default = ["std", "idna"]
@@ -42,8 +44,10 @@ std = ["idna/std"]
 debugger_visualizer = []
 # Expose internal offsets of the URL.
 expose_internals = []
-alloc = ["idna/alloc", "serde/alloc"]
+alloc = ["idna/alloc", "serde/alloc", "form_urlencoded/alloc", "percent-encoding/alloc", "serde/alloc"]
 core-error = []
+core-net = []
+
 
 
 [[bench]]

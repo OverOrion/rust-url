@@ -8,7 +8,7 @@
 
 //! Data-driven tests
 
-use std::str::FromStr;
+use core::str::FromStr;
 
 use serde_json::Value;
 use url::{quirks, Url};
